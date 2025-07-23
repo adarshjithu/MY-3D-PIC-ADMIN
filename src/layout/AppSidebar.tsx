@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router";
 // Assume these icons are imported from an icon library
 import { CalenderIcon, ChevronDownIcon, GridIcon, HorizontaLDots, PlugInIcon, UserIcon } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import { LayoutDashboard, ListOrderedIcon, Option, ShoppingBag } from "lucide-react";
+import { Heart, HeartCrack, LayoutDashboard, ListOrderedIcon, LucideListOrdered, Option, ShoppingBag, Square, Truck } from "lucide-react";
 
 type NavItem = {
     name: string;
@@ -30,9 +30,24 @@ const navItems: NavItem[] = [
         path: "/products",
     },
     {
-        icon: <ListOrderedIcon />,
-        name: "Orderas",
+        icon: <Truck />,
+        name: "Orders",
         path: "/orders",
+    },
+    {
+        icon: <HeartCrack />,
+        name: "Shapes",
+        path: "/shapes",
+    },
+    {
+        icon: <ListOrderedIcon />,
+        name: "Categories",
+        path: "/categories",
+    },
+    {
+        icon: <Square />,
+        name: "Base",
+        path: "/base",
     },
 ];
 

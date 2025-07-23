@@ -1,56 +1,61 @@
 import { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../components/ui/table";
 import { Pencil, Trash } from "lucide-react";
-import Breadcrumb from "../../components/brudcrump/Breadcrumb";
-import SearchBox from "../../components/ui/SearchBox";
-import { useGetUsers, userUserDelete, useToggleBlockStatus, useToggleStatus } from "../../hooks/users";
-import TableLoading from "../../components/ui/table/TableLoading";
-import Pagination from "../../components/ui/pagination/Pagination";
-import Switch from "../../components/ui/switch/Switch";
-import DeleteModal from "../../components/ui/modals/common/DeleteModal";
+import Breadcrumb from "../components/brudcrump/Breadcrumb";
+import SearchBox from "../components/ui/SearchBox";
+import TableLoading from "../components/ui/table/TableLoading";
+import Pagination from "../components/ui/pagination/Pagination";
+import Switch from "../components/ui/switch/Switch";
+import DeleteModal from "../components/ui/modals/common/DeleteModal";
+import PageTableHeading from "../components/common/PageTableHeading";
+
+
+import { useDeleteCategory, useGetCategories, useUpdateCategory } from "../hooks/useCategories";
+import AddCategoryModal from "../components/modals/AddCategoryModal";
+import AddBaseModal from "../components/modals/AddBaseModal";
+import { useGetBaseProducts } from "../hooks/useBaseProducts";
 
 const columns = [
-    { key: "image", label: "Image" },
-    { key: "firstName", label: "First Name" },
-    { key: "lastName", label: "Last Name" },
-    { key: "email", label: "Email" },
-    { key: "phoneNumber", label: "Phone" },
-    { key: "country", label: "Country" },
-    { key: "role", label: "Role" },
-    { key: "createdAt", label: "Created At" },
-    { key: "isActive", label: "Active" },
-    { key: "isBlocked", label: "Blocked" },
-    { key: "actions", label: "Actions" },
+    { key: "Index", label: "INDEX" },
+    { key: "Name", label: "NAME" },
+    { key: "Slug", label: "SLUG" },
+    { key: "Thumbnail", label: "THUMBNAIL" },
+    { key: "Price", label: "PRICE" },
+    { key: "Inventory", label: "INVENTORY" },
+    { key: "Size", label: "SIZE" },
+
+    { key: "createdAt", label: "CREATED AT" },
+    { key: "isActive", label: "ACTIVE" },
+    { key: "actions", label: "ACTIONS" },
 ];
 
-export default function Users() {
+export default function Base() {
     // Static UI state only
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
-    const [blockedFilter, setBlockedFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
     const [sortKey, setSortKey] = useState<string>("createdAt");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedUserId, setSelectedUserId] = useState('');
+    const [selectedCategoryId, setSelectedCateogoryId] = useState("");
+    const [isBaseModalOpen, setIsBaseModalOpen] = useState(false);
+    const [editBaseData, setEditBaseData] = useState<any>(null);
 
-    const params = {
-        search:debouncedSearch,
+    const params: any = {
         status: statusFilter,
-        blocked: blockedFilter,
         sortKey,
         sortOrder,
         limit,
         page,
     };
-
-    const { isLoading, data, error } = useGetUsers(params);
-    const toggleMutation = useToggleStatus();
-    const toggleBlockMutation = useToggleBlockStatus();
-    const deleteUserData =  userUserDelete()
+    debouncedSearch ? (params.search = debouncedSearch) : "";
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+        
+        const { isLoading, data } = useGetBaseProducts(params);
+        const { mutate: deleteCategory } = useDeleteCategory();
+        const { mutate: updateCategory } = useUpdateCategory();
 
     useEffect(() => {
         if (data?.data?.totalPages) {
@@ -60,20 +65,29 @@ export default function Users() {
 
     return (
         <div className="space-y-4">
+            <Breadcrumb
+                elements={[
+                    { page: "Home", path: "/" },
+                    { page: "Users", path: "/users" },
+                ]}
+            />
+            <PageTableHeading
+                title="Base"
+                buttonText="Add Base"
+                path=""
+                onClick={() => {
+                    setIsBaseModalOpen(true);
+                    setEditBaseData(null);
+                }}
+            />
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
                 <div className="p-4">
-                    <Breadcrumb
-                        elements={[
-                            { page: "Home", path: "/" },
-                            { page: "Users", path: "/users" },
-                        ]}
-                    />
                     <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                         <SearchBox
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             onDebouncedChange={setDebouncedSearch}
-                            placeholder="Search users..."
+                            placeholder="Search products..."
                         />
                         <div className="flex gap-2 items-center">
                             <select
@@ -85,21 +99,13 @@ export default function Users() {
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
-                            <select
-                                value={blockedFilter}
-                                onChange={(e) => setBlockedFilter(e.target.value)}
-                                className="border rounded px-2 py-2 bg-white text-gray-900 dark:bg-gray-900 dark:text-white dark:border-gray-700"
-                            >
-                                <option value="">All Users</option>
-                                <option value="blocked">Blocked</option>
-                                <option value="unblocked">Unblocked</option>
-                            </select>
+
                             <select
                                 value={sortKey}
                                 onChange={(e) => setSortKey(e.target.value)}
                                 className="border rounded px-2 py-2 bg-white text-gray-900 dark:bg-gray-900 dark:text-white dark:border-gray-700"
                             >
-                                <option value="firstName">Name</option>
+                                <option value="name">Name</option>
                                 <option value="createdAt">Date</option>
                             </select>
                             <button
@@ -124,7 +130,7 @@ export default function Users() {
                                         <TableCell
                                             key={String(col.key)}
                                             isHeader
-                                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 select-none"
+                                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-white"
                                         >
                                             {col.label}
                                         </TableCell>
@@ -132,29 +138,17 @@ export default function Users() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                                {data?.data?.users?.map((data: any) => (
+                                {data?.data?.baseProducts?.map((data: any, index: number) => (
                                     <TableRow key={String(data?._id)}>
-                                        <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                            <img src={String(data.image)} alt="user" className="w-10 h-10 rounded-full object-cover" />
+                                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-800 dark:text-white/90">{index + 1 }</TableCell>
+                                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-800 dark:text-white/90">{data?.name}</TableCell>
+                                        <TableCell className="px-5 py-4 text-start text-gray-800 dark:text-white/90">
+                                             {data?.slug}
                                         </TableCell>
-                                        <TableCell className="px-4 py-3 text-gray-800 text-start text-theme-sm dark:text-white/90">
-                                            {String(data.firstName)}
+                                        <TableCell className="px-5 py-4 text-start text-gray-800 dark:text-white/90">
+                                             {data?.description}
                                         </TableCell>
-                                        <TableCell className="px-4 py-3 text-gray-800 text-start text-theme-sm dark:text-white/90">
-                                            {String(data.lastName)}
-                                        </TableCell>
-                                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                            {String(data.email)}
-                                        </TableCell>
-                                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                            {String(data.phoneNumber)}
-                                        </TableCell>
-                                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                            {String(data.country)}
-                                        </TableCell>
-                                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                            {String(data.role)}
-                                        </TableCell>
+
                                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                             {new Date(data.createdAt).toLocaleDateString()}
                                         </TableCell>
@@ -162,32 +156,30 @@ export default function Users() {
                                             <div className="flex items-center gap-2">
                                                 <Switch
                                                     checked={data.isActive}
-                                                    onChange={(checked) => toggleMutation.mutate(data?._id)}
+                                                    onChange={(e) => {
+                                                        updateCategory({ data: { isActive: e }, id: data?._id });
+                                                    }}
                                                     size="sm"
                                                     color="success"
                                                 />
                                                 <span>{data.isActive ? "Active" : "Inactive"}</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                            <div className="flex items-center gap-2">
-                                                <Switch
-                                                    checked={!data.isBlocked}
-                                                    onChange={(checked) => toggleBlockMutation.mutate(data?._id)}
-                                                    size="sm"
-                                                    color="error"
-                                                />
-                                                <span>{data.isBlocked ? "Blocked" : "Unblocked"}</span>
-                                            </div>
-                                        </TableCell>
+
                                         <TableCell>
                                             <div className="flex gap-3">
-                                                <button className="text-blue-500 hover:text-blue-700">
+                                                <button
+                                                    onClick={() => {
+                                                        setEditBaseData(data);
+                                                        setIsBaseModalOpen(true);
+                                                    }}
+                                                    className="text-blue-500 hover:text-blue-700"
+                                                >
                                                     <Pencil size={18} />
                                                 </button>
                                                 <button
                                                     onClick={() => {
-                                                        setSelectedUserId(data?._id);
+                                                        setSelectedCateogoryId(data?._id);
                                                         setDeleteModalOpen(true);
                                                     }}
                                                     className="text-red-500 hover:text-red-700"
@@ -204,14 +196,14 @@ export default function Users() {
                 </div>
             </div>
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
-                <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                <Pagination currentPage={page} totalPages={Math.ceil(data?.data?.totalPages / limit)} onPageChange={setPage} />
             </div>
             {deleteModalOpen && (
                 <DeleteModal
                     handleDelete={(arg: boolean) => {
                         if (arg) {
-                          deleteUserData.mutate(selectedUserId);
-                          setDeleteModalOpen(false)
+                            deleteCategory(selectedCategoryId);
+                            setDeleteModalOpen(false);
                         } else {
                             setDeleteModalOpen(false);
                         }
@@ -220,6 +212,7 @@ export default function Users() {
                     type={"User"}
                 />
             )}
+            {isBaseModalOpen && <AddBaseModal  setIsOpen={setIsBaseModalOpen} editBaseData={editBaseData} />}
         </div>
     );
 }

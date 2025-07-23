@@ -1,9 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Userlist from "./pages/Users/Users";
-import Users from "./pages/Users/Users";
-import Dashoard from "./pages/Dashboard/Dashoard";
+
+import Dashoard from "./pages/Dashoard";
+import Products from "./pages/Products";
+
+import Categories from "./pages/Categories";
+import Base from "./pages/Base";
+
+import Users from "./pages/Categories";
+import Shapes from "./pages/Shapes";
+
 
 export default function App() {
     return (
@@ -13,6 +20,11 @@ export default function App() {
                 <Route path="/" element={<AppLayout />}>
                     <Route index element={<Dashoard />} />
                     <Route path="users" element={<Users />} />
+                    <Route path="products" element={<Products />} />
+                    <Route path="shapes" element={<Shapes />} />
+                    <Route path="categories" element={<Categories />} />
+                    <Route path="base" element={<Base />} />
+                  
                 </Route>
             </Routes>
         </Router>

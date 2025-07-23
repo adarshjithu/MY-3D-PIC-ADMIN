@@ -16,15 +16,11 @@ export const useToggleStatus = () => {
         mutationFn: (userId: string) => toggleUserStatus(userId),
         onSuccess: (data) => {
             const userId = data?.data?._id;
-            console.log(userId);
             toast.success("Status Updated successfully ✅");
-
-            queryClient.setQueriesData(["users"], (oldData: any) => {
+            queryClient.setQueriesData(["users"] as any, (oldData: any) => {
                 const users = oldData?.data?.users;
                 if (!users) return oldData;
-
                 const updatedUsers = users?.map((obj: any) => (obj?._id == userId ? { ...obj, isActive: !obj?.isActive } : obj));
-
                 return {
                     ...oldData,
                     data: {
@@ -42,7 +38,6 @@ export const useToggleStatus = () => {
 
 export const useToggleBlockStatus = () => {
     const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: (userId: string) => blockuser(userId),
 
@@ -50,7 +45,7 @@ export const useToggleBlockStatus = () => {
             const userId = data?.data?._id;
             toast.success("Status Updated successfully ✅");
 
-            queryClient.setQueriesData(["users"], (oldData: any) => {
+            queryClient.setQueriesData(["users"] as any, (oldData: any) => {
                 const users = oldData?.data?.users;
                 if (!users) return oldData;
 
@@ -73,6 +68,8 @@ export const useToggleBlockStatus = () => {
         },
     });
 };
+
+
 export const userUserDelete = () => {
     const queryClient = useQueryClient();
 
@@ -83,13 +80,11 @@ export const userUserDelete = () => {
             const userId = data?.data?._id;
             toast.success("Status deleted successfully ✅");
 
-            queryClient.setQueriesData(["users"], (oldData: any) => {
+            queryClient.setQueriesData(["users"] as any, (oldData: any) => {
                 const users = oldData?.data?.users;
                 if (!users) return oldData;
 
-                const updatedUsers = users.filter((obj: any) =>obj?._id!==userId
-                   
-                );
+                const updatedUsers = users.filter((obj: any) => obj?._id !== userId);
 
                 return {
                     ...oldData,
