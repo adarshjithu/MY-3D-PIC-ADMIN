@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
-import { Pencil, Table, Trash } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import { useDeleteShape, useGetShapes, useUpdateShape } from "../hooks/useShapes";
 import Breadcrumb from "../components/brudcrump/Breadcrumb";
 import PageTableHeading from "../components/common/PageTableHeading";
 import SearchBox from "../components/ui/SearchBox";
 import TableLoading from "../components/ui/table/TableLoading";
-import { TableBody, TableCell, TableHeader, TableRow } from "../components/ui/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../components/ui/table";
 import Switch from "../components/ui/switch/Switch";
 import DeleteModal from "../components/ui/modals/common/DeleteModal";
 import Pagination from "../components/ui/pagination/Pagination";
@@ -130,7 +130,9 @@ export default function Shapes() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                                {data?.data?.shapes?.map((data: any, index: number) => (
+                                {data?.data?.shapes?.map((data: any, index: number) => {
+                                    console.log(data);
+                                    return (
                                     <TableRow key={String(data?._id)}>
                                         <TableCell className="px-5 py-4 sm:px-6 text-start">{index + 1}</TableCell>
                                         <TableCell className="px-5 py-4 sm:px-6 text-start">{data?.name}</TableCell>
@@ -178,7 +180,7 @@ export default function Shapes() {
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                )})}
                             </TableBody>
                         </Table>
                     )}

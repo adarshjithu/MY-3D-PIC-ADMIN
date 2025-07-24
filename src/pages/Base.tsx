@@ -9,18 +9,16 @@ import Switch from "../components/ui/switch/Switch";
 import DeleteModal from "../components/ui/modals/common/DeleteModal";
 import PageTableHeading from "../components/common/PageTableHeading";
 
-
-import { useDeleteCategory, useGetCategories, useUpdateCategory } from "../hooks/useCategories";
-import AddCategoryModal from "../components/modals/AddCategoryModal";
 import AddBaseModal from "../components/modals/AddBaseModal";
-import { useGetBaseProducts } from "../hooks/useBaseProducts";
+import { useDeleteBaseProduct, useGetBaseProducts, useUpdateBaseProduct } from "../hooks/useBaseProducts";
+
 
 const columns = [
     { key: "Index", label: "INDEX" },
     { key: "Name", label: "NAME" },
-    { key: "Slug", label: "SLUG" },
     { key: "Thumbnail", label: "THUMBNAIL" },
-    { key: "Price", label: "PRICE" },
+    { key: "Images", label: "IMAGES" },
+    { key: "Baseprice", label: "PRICE" },
     { key: "Inventory", label: "INVENTORY" },
     { key: "Size", label: "SIZE" },
 
@@ -39,9 +37,10 @@ export default function Base() {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedCategoryId, setSelectedCateogoryId] = useState("");
+    const [selectedBaseProductId, setSelectedBaseProductId] = useState("");
     const [isBaseModalOpen, setIsBaseModalOpen] = useState(false);
     const [editBaseData, setEditBaseData] = useState<any>(null);
+    const [isEditModalOpen,setIsEditModalOpen] = useState(false)
 
     const params: any = {
         status: statusFilter,
@@ -54,8 +53,8 @@ export default function Base() {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
         
         const { isLoading, data } = useGetBaseProducts(params);
-        const { mutate: deleteCategory } = useDeleteCategory();
-        const { mutate: updateCategory } = useUpdateCategory();
+        const {mutate:deleteBaseProduct} = useDeleteBaseProduct();
+        const {mutate:updateBaseProduct} = useUpdateBaseProduct();
 
     useEffect(() => {
         if (data?.data?.totalPages) {
@@ -142,11 +141,26 @@ export default function Base() {
                                     <TableRow key={String(data?._id)}>
                                         <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-800 dark:text-white/90">{index + 1 }</TableCell>
                                         <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-800 dark:text-white/90">{data?.name}</TableCell>
-                                        <TableCell className="px-5 py-4 text-start text-gray-800 dark:text-white/90">
-                                             {data?.slug}
+                                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-800 dark:text-white/90"><img className="w-10 h-10 object-cover rounded-full" src={data?.thumbnail} alt="" /></TableCell>
+                                        <TableCell className="px-5 py-4 sm:px-6 text-start text-gray-800 dark:text-white/90">
+                                      { data?.images?.length > 0 ? <div className="flex flex-wrap gap-2">
+                                            {data?.images?.map((img:any,index:number)=>(
+                                                <img key={index} className="w-10 h-10 object-cover rounded-full" src={img} alt="" />
+                                            ))}
+                                        </div>:"------"}
                                         </TableCell>
                                         <TableCell className="px-5 py-4 text-start text-gray-800 dark:text-white/90">
-                                             {data?.description}
+                                             {data?.price?.basePrice}
+                                        </TableCell>
+                                        <TableCell className="px-5 py-4 text-start text-gray-800 dark:text-white/90">
+                                            {data?.inventory?.quantity}
+                                        </TableCell>
+                                        <TableCell className="px-5 py-4 text-start text-gray-800 dark:text-white/90">
+                                        <div className="flex flex-col">
+                                            <span>W : {data?.size?.width}</span>
+                                            <span>L : {data?.size?.length}</span>
+                                            <span>H : {data?.size?.height}</span>
+                                        </div>
                                         </TableCell>
 
                                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
@@ -157,7 +171,7 @@ export default function Base() {
                                                 <Switch
                                                     checked={data.isActive}
                                                     onChange={(e) => {
-                                                        updateCategory({ data: { isActive: e }, id: data?._id });
+                                                        ({ data: { isActive: e }, id: data?._id });
                                                     }}
                                                     size="sm"
                                                     color="success"
@@ -165,6 +179,7 @@ export default function Base() {
                                                 <span>{data.isActive ? "Active" : "Inactive"}</span>
                                             </div>
                                         </TableCell>
+                                      
 
                                         <TableCell>
                                             <div className="flex gap-3">
@@ -179,7 +194,7 @@ export default function Base() {
                                                 </button>
                                                 <button
                                                     onClick={() => {
-                                                        setSelectedCateogoryId(data?._id);
+                                                                setSelectedBaseProductId(data?._id);
                                                         setDeleteModalOpen(true);
                                                     }}
                                                     className="text-red-500 hover:text-red-700"
@@ -202,7 +217,7 @@ export default function Base() {
                 <DeleteModal
                     handleDelete={(arg: boolean) => {
                         if (arg) {
-                            deleteCategory(selectedCategoryId);
+                            deleteBaseProduct(selectedBaseProductId);                            
                             setDeleteModalOpen(false);
                         } else {
                             setDeleteModalOpen(false);

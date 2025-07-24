@@ -7,9 +7,10 @@ import Products from "./pages/Products";
 
 import Categories from "./pages/Categories";
 import Base from "./pages/Base";
-
-import Users from "./pages/Categories";
+import Users from "./pages/Users";
 import Shapes from "./pages/Shapes";
+
+
 
 
 export default function App() {

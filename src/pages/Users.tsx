@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../components/ui/table";
+
 import { Pencil, Trash } from "lucide-react";
-import Breadcrumb from "../../components/brudcrump/Breadcrumb";
-import SearchBox from "../../components/ui/SearchBox";
-import { useGetUsers, userUserDelete, useToggleBlockStatus, useToggleStatus } from "../../hooks/useUsers";
-import TableLoading from "../../components/ui/table/TableLoading";
-import Pagination from "../../components/ui/pagination/Pagination";
-import Switch from "../../components/ui/switch/Switch";
-import DeleteModal from "../../components/ui/modals/common/DeleteModal";
+import { useGetUsers, userUserDelete, useToggleBlockStatus, useToggleStatus } from "../hooks/useUsers";
+import Breadcrumb from "../components/brudcrump/Breadcrumb";
+import SearchBox from "../components/ui/SearchBox";
+import TableLoading from "../components/ui/table/TableLoading";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../components/ui/table";
+import Switch from "../components/ui/switch/Switch";
+import Pagination from "../components/ui/pagination/Pagination";
+import DeleteModal from "../components/ui/modals/common/DeleteModal";
+
 
 const columns = [
     { key: "image", label: "Image" },
@@ -46,7 +48,7 @@ export default function Users() {
         page,
     };
 
-    const { isLoading, data, error } = useGetUsers(params);
+    const { isLoading, data } = useGetUsers(params);
     const toggleMutation = useToggleStatus();
     const toggleBlockMutation = useToggleBlockStatus();
     const deleteUserData =  userUserDelete()
