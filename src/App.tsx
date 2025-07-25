@@ -1,10 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-
 import Dashoard from "./pages/Dashoard";
 import Products from "./pages/Products";
-
 import Categories from "./pages/Categories";
 import Base from "./pages/Base";
 import Users from "./pages/Users";
@@ -25,6 +23,7 @@ export default function App() {
                     <Route path="shapes" element={<Shapes />} />
                     <Route path="categories" element={<Categories />} />
                     <Route path="base" element={<Base />} />
+                    <Route path="products" element={<Products />} />
                   
                 </Route>
             </Routes>

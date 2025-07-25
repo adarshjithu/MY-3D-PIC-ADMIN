@@ -163,8 +163,9 @@ export default function Users() {
                                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                                             <div className="flex items-center gap-2">
                                                 <Switch
+                                                    
                                                     checked={data.isActive}
-                                                    onChange={(checked) => toggleMutation.mutate(data?._id)}
+                                                    onChange={(checked) => {toggleMutation.mutate(data?._id)}}
                                                     size="sm"
                                                     color="success"
                                                 />
